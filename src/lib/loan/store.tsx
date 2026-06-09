@@ -8,7 +8,7 @@ const defaultInputs: LoanInputs = {
   tenureYears: 20,
   startDate: new Date().toISOString().slice(0, 10),
   rateChanges: [],
-  stepUp: { extraEmisPerYear: 1, annualIncrementPct: 5, applyMonth: 3 },
+  stepUp: { extraEmisPerYear: 1, incrementMode: "percent", annualIncrementPct: 5, annualIncrementAmount: 0, applyMonth: 3, startYear: 2 },
   pauseWindows: [],
   prepayments: [],
 };

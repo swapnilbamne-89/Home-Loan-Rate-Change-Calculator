@@ -55,14 +55,20 @@ export function generateSchedule(inputs: LoanInputs): ScheduleResult {
     }
 
     // Step-up & extra EMI: applied on configured month of each year (after first year)
-    const yearIndex = Math.floor((m - 1) / 12); // 0 in year 1
+    const loanYear = Math.floor((m - 1) / 12) + 1; // 1 in year 1
     const monthOfYear = ((m - 1) % 12) + 1;
-    const isStepUpMonth = monthOfYear === inputs.stepUp.applyMonth && yearIndex >= 1;
+    const startYear = Math.max(1, inputs.stepUp.startYear ?? 2);
+    const isStepUpMonth = monthOfYear === inputs.stepUp.applyMonth && loanYear >= startYear;
     if (isStepUpMonth) {
       const paused = inAnyWindow(m, inputs.pauseWindows);
-      if (!paused && inputs.stepUp.annualIncrementPct > 0) {
-        currentEmi = currentEmi * (1 + inputs.stepUp.annualIncrementPct / 100);
-        notes.push(`Step-up +${inputs.stepUp.annualIncrementPct}%`);
+      if (!paused) {
+        if (inputs.stepUp.incrementMode === "amount" && inputs.stepUp.annualIncrementAmount > 0) {
+          currentEmi = currentEmi + inputs.stepUp.annualIncrementAmount;
+          notes.push(`Step-up +₹${inputs.stepUp.annualIncrementAmount.toLocaleString("en-IN")}`);
+        } else if (inputs.stepUp.annualIncrementPct > 0) {
+          currentEmi = currentEmi * (1 + inputs.stepUp.annualIncrementPct / 100);
+          notes.push(`Step-up +${inputs.stepUp.annualIncrementPct}%`);
+        }
       }
     }
 
@@ -135,7 +141,7 @@ export function generateOriginalSchedule(inputs: LoanInputs): ScheduleResult {
   const baseline: LoanInputs = {
     ...inputs,
     rateChanges: [],
-    stepUp: { extraEmisPerYear: 0, annualIncrementPct: 0, applyMonth: 12 },
+    stepUp: { extraEmisPerYear: 0, incrementMode: "percent", annualIncrementPct: 0, annualIncrementAmount: 0, applyMonth: 12, startYear: 2 },
     pauseWindows: [],
     prepayments: [],
   };

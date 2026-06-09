@@ -19,10 +19,15 @@ export interface Prepayment {
   amount: number;
 }
 
+export type IncrementMode = "percent" | "amount";
+
 export interface StepUpPlan {
   extraEmisPerYear: number; // e.g. 1 = one bonus EMI per year
-  annualIncrementPct: number; // e.g. 5 = +5% to EMI each year
+  incrementMode: IncrementMode; // 'percent' = % increase, 'amount' = flat ₹ added to EMI
+  annualIncrementPct: number; // used when incrementMode = 'percent'
+  annualIncrementAmount: number; // used when incrementMode = 'amount' (₹ added to EMI each step-up)
   applyMonth: number; // 1..12 (calendar month-of-loan-year when bonus & step-up apply)
+  startYear: number; // loan year from which step-up begins (e.g. 2 = starting year 2)
 }
 
 export interface LoanInputs {
