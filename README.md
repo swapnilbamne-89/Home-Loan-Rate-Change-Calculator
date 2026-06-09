@@ -1,4 +1,4 @@
-# LedgerLoan — Home Loan Repayment Studio
+# Home Loan Repayment Calculator
 
 An advanced **Home Loan Repayment Calculator** built for Indian borrowers. Model your loan against real-world scenarios — RBI/bank rate revisions, annual EMI step-ups, cash-flow pause windows, and one-off prepayments — and instantly see how much interest you save and how many months you knock off your tenure.
 
