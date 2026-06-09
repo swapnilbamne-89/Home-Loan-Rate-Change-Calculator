@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
+import { NumberInput } from "./NumberInput";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -15,11 +16,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function num(v: string) {
-  const n = Number(v.replace(/[^0-9.\-]/g, ""));
-  return isFinite(n) ? n : 0;
-}
-
 export function LoanConfigPanel() {
   const { inputs, dispatch } = useLoan();
   return (
@@ -28,25 +24,24 @@ export function LoanConfigPanel() {
       <Card title="Loan Basics">
         <div className="space-y-4">
           <Field label="Principal Amount (₹)">
-            <Input
-              inputMode="numeric"
-              value={inputs.loanAmount.toString()}
-              onChange={(e) => dispatch({ type: "patch", patch: { loanAmount: num(e.target.value) } })}
+            <NumberInput
+              value={inputs.loanAmount}
+              onChange={(n) => dispatch({ type: "patch", patch: { loanAmount: n } })}
             />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Rate (% p.a.)">
-              <Input
-                inputMode="decimal"
-                value={inputs.startRatePct.toString()}
-                onChange={(e) => dispatch({ type: "patch", patch: { startRatePct: num(e.target.value) } })}
+              <NumberInput
+                decimal
+                value={inputs.startRatePct}
+                onChange={(n) => dispatch({ type: "patch", patch: { startRatePct: n } })}
               />
             </Field>
             <Field label="Tenure (yrs)">
-              <Input
-                inputMode="decimal"
-                value={inputs.tenureYears.toString()}
-                onChange={(e) => dispatch({ type: "patch", patch: { tenureYears: num(e.target.value) } })}
+              <NumberInput
+                decimal
+                value={inputs.tenureYears}
+                onChange={(n) => dispatch({ type: "patch", patch: { tenureYears: n } })}
               />
             </Field>
           </div>
@@ -82,19 +77,17 @@ export function LoanConfigPanel() {
               <div key={r.id} className="rounded-lg border bg-secondary/40 p-3 space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <Field label="From month">
-                    <Input
-                      inputMode="numeric"
-                      value={r.effectiveMonth.toString()}
-                      onChange={(e) =>
-                        dispatch({ type: "updateRate", id: r.id, patch: { effectiveMonth: Math.max(2, num(e.target.value)) } })
-                      }
+                    <NumberInput
+                      value={r.effectiveMonth}
+                      min={2}
+                      onChange={(n) => dispatch({ type: "updateRate", id: r.id, patch: { effectiveMonth: n } })}
                     />
                   </Field>
                   <Field label="New rate %">
-                    <Input
-                      inputMode="decimal"
-                      value={r.ratePct.toString()}
-                      onChange={(e) => dispatch({ type: "updateRate", id: r.id, patch: { ratePct: num(e.target.value) } })}
+                    <NumberInput
+                      decimal
+                      value={r.ratePct}
+                      onChange={(n) => dispatch({ type: "updateRate", id: r.id, patch: { ratePct: n } })}
                     />
                   </Field>
                 </div>
@@ -124,35 +117,70 @@ export function LoanConfigPanel() {
       {/* Step-up */}
       <Card title="Step-up Plan">
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Extra EMIs / yr">
-              <Input
-                inputMode="decimal"
-                value={inputs.stepUp.extraEmisPerYear.toString()}
-                onChange={(e) => dispatch({ type: "patchStepUp", patch: { extraEmisPerYear: num(e.target.value) } })}
-              />
-            </Field>
-            <Field label="Annual ↑ %">
-              <Input
-                inputMode="decimal"
-                value={inputs.stepUp.annualIncrementPct.toString()}
-                onChange={(e) => dispatch({ type: "patchStepUp", patch: { annualIncrementPct: num(e.target.value) } })}
-              />
-            </Field>
-          </div>
-          <Field label="Apply in month">
+          <Field label="Annual increment type">
             <Select
-              value={inputs.stepUp.applyMonth.toString()}
-              onValueChange={(v) => dispatch({ type: "patchStepUp", patch: { applyMonth: Number(v) } })}
+              value={inputs.stepUp.incrementMode}
+              onValueChange={(v) => dispatch({ type: "patchStepUp", patch: { incrementMode: v as any } })}
             >
               <SelectTrigger className="h-9 bg-background"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {MONTHS.map((m, i) => (
-                  <SelectItem key={i} value={(i + 1).toString()}>{m} (month {i + 1} of loan year)</SelectItem>
-                ))}
+                <SelectItem value="percent">Percentage (%)</SelectItem>
+                <SelectItem value="amount">Fixed amount (₹)</SelectItem>
               </SelectContent>
             </Select>
           </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Extra EMIs / yr">
+              <NumberInput
+                decimal
+                value={inputs.stepUp.extraEmisPerYear}
+                onChange={(n) => dispatch({ type: "patchStepUp", patch: { extraEmisPerYear: n } })}
+              />
+            </Field>
+            {inputs.stepUp.incrementMode === "percent" ? (
+              <Field label="Annual ↑ %">
+                <NumberInput
+                  decimal
+                  value={inputs.stepUp.annualIncrementPct}
+                  onChange={(n) => dispatch({ type: "patchStepUp", patch: { annualIncrementPct: n } })}
+                />
+              </Field>
+            ) : (
+              <Field label="Annual ↑ (₹)">
+                <NumberInput
+                  value={inputs.stepUp.annualIncrementAmount}
+                  onChange={(n) => dispatch({ type: "patchStepUp", patch: { annualIncrementAmount: n } })}
+                />
+              </Field>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Apply in month">
+              <Select
+                value={inputs.stepUp.applyMonth.toString()}
+                onValueChange={(v) => dispatch({ type: "patchStepUp", patch: { applyMonth: Number(v) } })}
+              >
+                <SelectTrigger className="h-9 bg-background"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {MONTHS.map((m, i) => (
+                    <SelectItem key={i} value={(i + 1).toString()}>{m} (month {i + 1})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Start from year">
+              <NumberInput
+                min={1}
+                value={inputs.stepUp.startYear}
+                onChange={(n) => dispatch({ type: "patchStepUp", patch: { startYear: Math.max(1, n) } })}
+              />
+            </Field>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            {inputs.stepUp.incrementMode === "amount"
+              ? `EMI will rise by ₹${inputs.stepUp.annualIncrementAmount.toLocaleString("en-IN")} every ${MONTHS[inputs.stepUp.applyMonth - 1]} from year ${inputs.stepUp.startYear}.`
+              : `EMI will rise by ${inputs.stepUp.annualIncrementPct}% every ${MONTHS[inputs.stepUp.applyMonth - 1]} from year ${inputs.stepUp.startYear}.`}
+          </p>
         </div>
       </Card>
 
@@ -172,17 +200,15 @@ export function LoanConfigPanel() {
             {inputs.pauseWindows.map((p) => (
               <div key={p.id} className="flex items-end gap-2 rounded-lg border bg-secondary/40 p-3">
                 <Field label="From month" className="flex-1">
-                  <Input
-                    inputMode="numeric"
-                    value={p.startMonth.toString()}
-                    onChange={(e) => dispatch({ type: "updatePause", id: p.id, patch: { startMonth: num(e.target.value) } })}
+                  <NumberInput
+                    value={p.startMonth}
+                    onChange={(n) => dispatch({ type: "updatePause", id: p.id, patch: { startMonth: n } })}
                   />
                 </Field>
                 <Field label="To month" className="flex-1">
-                  <Input
-                    inputMode="numeric"
-                    value={p.endMonth.toString()}
-                    onChange={(e) => dispatch({ type: "updatePause", id: p.id, patch: { endMonth: num(e.target.value) } })}
+                  <NumberInput
+                    value={p.endMonth}
+                    onChange={(n) => dispatch({ type: "updatePause", id: p.id, patch: { endMonth: n } })}
                   />
                 </Field>
                 <Button size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePause", id: p.id })}>
@@ -210,17 +236,15 @@ export function LoanConfigPanel() {
             {inputs.prepayments.map((p) => (
               <div key={p.id} className="flex items-end gap-2 rounded-lg border bg-secondary/40 p-3">
                 <Field label="Month" className="w-24">
-                  <Input
-                    inputMode="numeric"
-                    value={p.month.toString()}
-                    onChange={(e) => dispatch({ type: "updatePrepay", id: p.id, patch: { month: num(e.target.value) } })}
+                  <NumberInput
+                    value={p.month}
+                    onChange={(n) => dispatch({ type: "updatePrepay", id: p.id, patch: { month: n } })}
                   />
                 </Field>
                 <Field label="Amount (₹)" className="flex-1">
-                  <Input
-                    inputMode="numeric"
-                    value={p.amount.toString()}
-                    onChange={(e) => dispatch({ type: "updatePrepay", id: p.id, patch: { amount: num(e.target.value) } })}
+                  <NumberInput
+                    value={p.amount}
+                    onChange={(n) => dispatch({ type: "updatePrepay", id: p.id, patch: { amount: n } })}
                   />
                 </Field>
                 <Button size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePrepay", id: p.id })}>
