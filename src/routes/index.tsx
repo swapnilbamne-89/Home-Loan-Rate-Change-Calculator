@@ -49,6 +49,8 @@ function HomePage() {
               <p className="mt-1 text-sm text-muted-foreground">Model rate changes, annual EMI step-ups, pause windows, and one-off prepayments — see the impact instantly.</p>
             </header>
             <KpiTiles />
+            <UpfrontCostsCard />
+
             <BalanceChart />
             <YearlyBreakdown />
             <ScheduleTable />
