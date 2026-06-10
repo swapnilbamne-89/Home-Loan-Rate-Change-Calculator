@@ -41,7 +41,7 @@ export function LoanConfigPanel() {
   return (
     <div className="space-y-6">
       {/* Basics */}
-      <Card title="Loan Basics">
+      <Card title="Loan Basics" info="The core inputs for your home loan: principal borrowed (₹), starting annual interest rate, total tenure in years, and the disbursement / first-EMI date. All other sections build on these values.">
         <div className="space-y-4">
           <Field label="Principal Amount (₹)">
             <NumberInput
