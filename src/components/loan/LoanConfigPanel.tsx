@@ -137,7 +137,7 @@ export function LoanConfigPanel() {
       </Card>
 
       {/* Step-up */}
-      <Card title="Step-up Plan">
+      <Card title="Step-up Plan" info="Automatically raise your EMI every year (e.g. after salary hikes) — either by a percentage or a fixed ₹ amount. Choose the apply-month and the year it kicks in. You can also add extra EMIs per year as a recurring bonus prepayment.">
         <div className="space-y-4">
           <Field label="Annual increment type">
             <Select
