@@ -3,8 +3,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Plus, Trash2, Info } from "lucide-react";
 import { NumberInput } from "./NumberInput";
+
+function InfoHint({ text }: { text: string }) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label="What is this?"
+          className="inline-flex size-4 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          <Info className="size-3.5" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent side="top" align="start" className="w-72 text-xs leading-relaxed">
+        {text}
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -21,7 +41,7 @@ export function LoanConfigPanel() {
   return (
     <div className="space-y-6">
       {/* Basics */}
-      <Card title="Loan Basics">
+      <Card title="Loan Basics" info="The core inputs for your home loan: principal borrowed (₹), starting annual interest rate, total tenure in years, and the disbursement / first-EMI date. All other sections build on these values.">
         <div className="space-y-4">
           <Field label="Principal Amount (₹)">
             <NumberInput
@@ -58,6 +78,8 @@ export function LoanConfigPanel() {
       {/* Rate Changes */}
       <Card
         title="Rate Schedule"
+        info="Model future interest rate revisions (RBI / bank repricing). For each change set the month it takes effect and the new rate, then choose: 'Keep EMI' (tenure adjusts) or 'Keep tenure' (EMI is recalculated)."
+
         action={
           <Button
             size="sm"
@@ -115,7 +137,7 @@ export function LoanConfigPanel() {
       </Card>
 
       {/* Step-up */}
-      <Card title="Step-up Plan">
+      <Card title="Step-up Plan" info="Automatically raise your EMI every year (e.g. after salary hikes) — either by a percentage or a fixed ₹ amount. Choose the apply-month and the year it kicks in. You can also add extra EMIs per year as a recurring bonus prepayment.">
         <div className="space-y-4">
           <Field label="Annual increment type">
             <Select
@@ -187,6 +209,8 @@ export function LoanConfigPanel() {
       {/* Pause Windows */}
       <Card
         title="Step-up Pause Windows"
+        info="Temporarily halt the annual EMI step-up and recurring extra EMIs during tight-cash periods (job switch, maternity, big expense). Define a From → To month range; normal EMI and interest continue, step-ups resume after the window ends."
+
         action={
           <Button size="sm" variant="ghost" className="h-7 text-[11px] font-semibold uppercase tracking-wider text-accent hover:text-accent" onClick={() => dispatch({ type: "addPause" })}>
             <Plus className="mr-1 size-3" /> Add
@@ -223,6 +247,8 @@ export function LoanConfigPanel() {
       {/* Prepayments */}
       <Card
         title="One-off Prepayments"
+        info="Lump-sum payments made in specific months (e.g. annual bonus, tax refund). Each prepayment reduces outstanding principal in that month, cutting future interest and shortening tenure while keeping EMI unchanged."
+
         action={
           <Button size="sm" variant="ghost" className="h-7 text-[11px] font-semibold uppercase tracking-wider text-accent hover:text-accent" onClick={() => dispatch({ type: "addPrepay" })}>
             <Plus className="mr-1 size-3" /> Add
@@ -259,11 +285,14 @@ export function LoanConfigPanel() {
   );
 }
 
-function Card({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
+function Card({ title, children, action, info }: { title: string; children: React.ReactNode; action?: React.ReactNode; info?: string }) {
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">
       <header className="mb-4 flex items-center justify-between">
-        <h3 className="font-display text-base font-semibold tracking-tight text-foreground">{title}</h3>
+        <div className="flex items-center gap-1.5">
+          <h3 className="font-display text-base font-semibold tracking-tight text-foreground">{title}</h3>
+          {info && <InfoHint text={info} />}
+        </div>
         {action}
       </header>
       {children}
