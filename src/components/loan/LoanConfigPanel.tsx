@@ -247,6 +247,8 @@ export function LoanConfigPanel() {
       {/* Prepayments */}
       <Card
         title="One-off Prepayments"
+        info="Lump-sum payments made in specific months (e.g. annual bonus, tax refund). Each prepayment reduces outstanding principal in that month, cutting future interest and shortening tenure while keeping EMI unchanged."
+
         action={
           <Button size="sm" variant="ghost" className="h-7 text-[11px] font-semibold uppercase tracking-wider text-accent hover:text-accent" onClick={() => dispatch({ type: "addPrepay" })}>
             <Plus className="mr-1 size-3" /> Add
