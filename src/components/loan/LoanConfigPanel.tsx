@@ -275,9 +275,128 @@ export function LoanConfigPanel() {
           </div>
         )}
       </Card>
+
+      {/* Upfront Costs & Fees */}
+      <Card
+        title="Upfront Costs & Fees"
+        info="One-time charges paid when taking the loan: bank processing fee (+18% GST), stamp duty & registration on the property, MODT charge for the mortgage deed, and insurance / legal / valuation fees. These don't change your EMI but inflate the true cost of borrowing — the dashboard uses them to compute the effective APR."
+      >
+        <div className="space-y-4">
+          <div>
+            <Field label="Processing fee mode">
+              <Select
+                value={inputs.upfront.processingFeeMode}
+                onValueChange={(v) => dispatch({ type: "patchUpfront", patch: { processingFeeMode: v as any } })}
+              >
+                <SelectTrigger className="h-9 bg-background"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="percent">Percentage of loan</SelectItem>
+                  <SelectItem value="amount">Flat amount</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {inputs.upfront.processingFeeMode === "percent" ? (
+              <Field label="Processing fee %">
+                <NumberInput
+                  decimal
+                  value={inputs.upfront.processingFeePct}
+                  onChange={(n) => dispatch({ type: "patchUpfront", patch: { processingFeePct: n } })}
+                />
+              </Field>
+            ) : (
+              <Field label="Processing fee (₹)">
+                <NumberInput
+                  value={inputs.upfront.processingFeeAmount}
+                  onChange={(n) => dispatch({ type: "patchUpfront", patch: { processingFeeAmount: n } })}
+                />
+              </Field>
+            )}
+            <Field label="GST on fee %">
+              <NumberInput
+                decimal
+                value={inputs.upfront.processingFeeGstPct}
+                onChange={(n) => dispatch({ type: "patchUpfront", patch: { processingFeeGstPct: n } })}
+              />
+            </Field>
+          </div>
+          <Field label="Deduct fee from disbursement?">
+            <Select
+              value={inputs.upfront.processingFeeDeductedFromDisbursement ? "yes" : "no"}
+              onValueChange={(v) => dispatch({ type: "patchUpfront", patch: { processingFeeDeductedFromDisbursement: v === "yes" } })}
+            >
+              <SelectTrigger className="h-9 bg-background"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="yes">Yes — net amount disbursed</SelectItem>
+                <SelectItem value="no">No — paid separately</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <div className="my-2 border-t" />
+
+          <Field label="Property value (₹) — for stamp duty">
+            <NumberInput
+              value={inputs.upfront.propertyValue}
+              onChange={(n) => dispatch({ type: "patchUpfront", patch: { propertyValue: n } })}
+            />
+          </Field>
+          <p className="-mt-2 text-[10px] text-muted-foreground">
+            Leave 0 to use the loan amount as the base.
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Stamp duty %">
+              <NumberInput
+                decimal
+                value={inputs.upfront.stampDutyPct}
+                onChange={(n) => dispatch({ type: "patchUpfront", patch: { stampDutyPct: n } })}
+              />
+            </Field>
+            <Field label="Registration %">
+              <NumberInput
+                decimal
+                value={inputs.upfront.registrationPct}
+                onChange={(n) => dispatch({ type: "patchUpfront", patch: { registrationPct: n } })}
+              />
+            </Field>
+          </div>
+          <Field label="MODT % (of loan)">
+            <NumberInput
+              decimal
+              value={inputs.upfront.modtPct}
+              onChange={(n) => dispatch({ type: "patchUpfront", patch: { modtPct: n } })}
+            />
+          </Field>
+
+          <div className="my-2 border-t" />
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Insurance premium (₹)">
+              <NumberInput
+                value={inputs.upfront.insurancePremium}
+                onChange={(n) => dispatch({ type: "patchUpfront", patch: { insurancePremium: n } })}
+              />
+            </Field>
+            <Field label="Legal / valuation (₹)">
+              <NumberInput
+                value={inputs.upfront.legalValuationFee}
+                onChange={(n) => dispatch({ type: "patchUpfront", patch: { legalValuationFee: n } })}
+              />
+            </Field>
+          </div>
+          <Field label="Other charges (₹)">
+            <NumberInput
+              value={inputs.upfront.otherCharges}
+              onChange={(n) => dispatch({ type: "patchUpfront", patch: { otherCharges: n } })}
+            />
+          </Field>
+        </div>
+      </Card>
     </div>
   );
 }
+
 
 function Card({ title, children, action, info }: { title: string; children: React.ReactNode; action?: React.ReactNode; info?: string }) {
   return (

@@ -4,6 +4,8 @@ import { LoanConfigPanel } from "@/components/loan/LoanConfigPanel";
 import { KpiTiles } from "@/components/loan/KpiTiles";
 import { BalanceChart, YearlyBreakdown } from "@/components/loan/Charts";
 import { ScheduleTable } from "@/components/loan/ScheduleTable";
+import { UpfrontCostsCard } from "@/components/loan/UpfrontCostsCard";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,6 +49,8 @@ function HomePage() {
               <p className="mt-1 text-sm text-muted-foreground">Model rate changes, annual EMI step-ups, pause windows, and one-off prepayments — see the impact instantly.</p>
             </header>
             <KpiTiles />
+            <UpfrontCostsCard />
+
             <BalanceChart />
             <YearlyBreakdown />
             <ScheduleTable />

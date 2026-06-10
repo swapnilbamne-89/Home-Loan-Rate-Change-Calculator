@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useReducer, type ReactNode } from "react";
-import type { LoanInputs, PauseWindow, Prepayment, RateChange } from "./types";
+import type { LoanInputs, PauseWindow, Prepayment, RateChange, UpfrontCosts } from "./types";
 import { generateOriginalSchedule, generateSchedule } from "./calculator";
 
 const defaultInputs: LoanInputs = {
@@ -11,11 +11,27 @@ const defaultInputs: LoanInputs = {
   stepUp: { extraEmisPerYear: 1, incrementMode: "percent", annualIncrementPct: 5, annualIncrementAmount: 0, applyMonth: 3, startYear: 2 },
   pauseWindows: [],
   prepayments: [],
+  upfront: {
+    processingFeeMode: "percent",
+    processingFeePct: 0.5,
+    processingFeeAmount: 0,
+    processingFeeGstPct: 18,
+    processingFeeDeductedFromDisbursement: true,
+    propertyValue: 0,
+    stampDutyPct: 5,
+    registrationPct: 1,
+    modtPct: 0.2,
+    insurancePremium: 0,
+    legalValuationFee: 5000,
+    otherCharges: 0,
+  },
 };
+
 
 type Action =
   | { type: "patch"; patch: Partial<LoanInputs> }
   | { type: "patchStepUp"; patch: Partial<LoanInputs["stepUp"]> }
+  | { type: "patchUpfront"; patch: Partial<UpfrontCosts> }
   | { type: "addRate" }
   | { type: "updateRate"; id: string; patch: Partial<RateChange> }
   | { type: "removeRate"; id: string }
@@ -26,6 +42,7 @@ type Action =
   | { type: "updatePrepay"; id: string; patch: Partial<Prepayment> }
   | { type: "removePrepay"; id: string };
 
+
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 function reducer(state: LoanInputs, action: Action): LoanInputs {
@@ -34,6 +51,9 @@ function reducer(state: LoanInputs, action: Action): LoanInputs {
       return { ...state, ...action.patch };
     case "patchStepUp":
       return { ...state, stepUp: { ...state.stepUp, ...action.patch } };
+    case "patchUpfront":
+      return { ...state, upfront: { ...state.upfront, ...action.patch } };
+
     case "addRate":
       return {
         ...state,

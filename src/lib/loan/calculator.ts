@@ -147,3 +147,96 @@ export function generateOriginalSchedule(inputs: LoanInputs): ScheduleResult {
   };
   return generateSchedule(baseline);
 }
+
+// ============= Upfront cost breakdown =============
+
+export interface UpfrontBreakdown {
+  processingFeeBase: number;
+  processingFeeGst: number;
+  processingFeeTotal: number;
+  stampDuty: number;
+  registration: number;
+  modt: number;
+  insurance: number;
+  legalValuation: number;
+  other: number;
+  total: number; // sum of everything above
+  netDisbursed: number; // loan amount minus what's deducted from disbursement
+  effectiveAprPct: number; // APR factoring in fees deducted from disbursement
+}
+
+export function computeUpfrontBreakdown(
+  inputs: LoanInputs,
+  schedule: ScheduleResult,
+): UpfrontBreakdown {
+  const u = inputs.upfront;
+  const propertyBase = u.propertyValue > 0 ? u.propertyValue : inputs.loanAmount;
+
+  const processingFeeBase =
+    u.processingFeeMode === "percent"
+      ? (inputs.loanAmount * u.processingFeePct) / 100
+      : u.processingFeeAmount;
+  const processingFeeGst = (processingFeeBase * u.processingFeeGstPct) / 100;
+  const processingFeeTotal = processingFeeBase + processingFeeGst;
+
+  const stampDuty = (propertyBase * u.stampDutyPct) / 100;
+  const registration = (propertyBase * u.registrationPct) / 100;
+  const modt = (inputs.loanAmount * u.modtPct) / 100;
+
+  const total =
+    processingFeeTotal +
+    stampDuty +
+    registration +
+    modt +
+    u.insurancePremium +
+    u.legalValuationFee +
+    u.otherCharges;
+
+  const netDisbursed = u.processingFeeDeductedFromDisbursement
+    ? inputs.loanAmount - processingFeeTotal
+    : inputs.loanAmount;
+
+  const effectiveAprPct = computeAprFromCashflows(netDisbursed, schedule);
+
+  return {
+    processingFeeBase,
+    processingFeeGst,
+    processingFeeTotal,
+    stampDuty,
+    registration,
+    modt,
+    insurance: u.insurancePremium,
+    legalValuation: u.legalValuationFee,
+    other: u.otherCharges,
+    total,
+    netDisbursed,
+    effectiveAprPct,
+  };
+}
+
+// Solve for monthly rate r such that NPV of EMI cashflows = netDisbursed,
+// using bisection. Returns annual % (APR, nominal monthly-compounded).
+function computeAprFromCashflows(netDisbursed: number, schedule: ScheduleResult): number {
+  const flows = schedule.rows.map((r) => r.principal + r.interest + r.extra + r.prepayment);
+  if (netDisbursed <= 0 || flows.length === 0) return 0;
+
+  const npv = (r: number) => {
+    let s = 0;
+    for (let i = 0; i < flows.length; i++) s += flows[i] / Math.pow(1 + r, i + 1);
+    return s - netDisbursed;
+  };
+
+  let lo = 0;
+  let hi = 1; // 100% monthly — absurdly high upper bound
+  // Expand hi if needed
+  for (let i = 0; i < 30 && npv(hi) < 0; i++) hi *= 2;
+  for (let i = 0; i < 80; i++) {
+    const mid = (lo + hi) / 2;
+    const v = npv(mid);
+    if (Math.abs(v) < 1) return mid * 12 * 100;
+    if (v > 0) lo = mid;
+    else hi = mid;
+  }
+  return ((lo + hi) / 2) * 12 * 100;
+}
+
