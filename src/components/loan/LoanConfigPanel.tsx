@@ -279,11 +279,14 @@ export function LoanConfigPanel() {
   );
 }
 
-function Card({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
+function Card({ title, children, action, info }: { title: string; children: React.ReactNode; action?: React.ReactNode; info?: string }) {
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">
       <header className="mb-4 flex items-center justify-between">
-        <h3 className="font-display text-base font-semibold tracking-tight text-foreground">{title}</h3>
+        <div className="flex items-center gap-1.5">
+          <h3 className="font-display text-base font-semibold tracking-tight text-foreground">{title}</h3>
+          {info && <InfoHint text={info} />}
+        </div>
         {action}
       </header>
       {children}
