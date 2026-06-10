@@ -31,6 +31,7 @@ const defaultInputs: LoanInputs = {
 type Action =
   | { type: "patch"; patch: Partial<LoanInputs> }
   | { type: "patchStepUp"; patch: Partial<LoanInputs["stepUp"]> }
+  | { type: "patchUpfront"; patch: Partial<UpfrontCosts> }
   | { type: "addRate" }
   | { type: "updateRate"; id: string; patch: Partial<RateChange> }
   | { type: "removeRate"; id: string }
@@ -40,6 +41,7 @@ type Action =
   | { type: "addPrepay" }
   | { type: "updatePrepay"; id: string; patch: Partial<Prepayment> }
   | { type: "removePrepay"; id: string };
+
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
