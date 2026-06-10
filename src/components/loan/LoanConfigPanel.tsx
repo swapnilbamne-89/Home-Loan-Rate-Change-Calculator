@@ -209,6 +209,8 @@ export function LoanConfigPanel() {
       {/* Pause Windows */}
       <Card
         title="Step-up Pause Windows"
+        info="Temporarily halt the annual EMI step-up and recurring extra EMIs during tight-cash periods (job switch, maternity, big expense). Define a From → To month range; normal EMI and interest continue, step-ups resume after the window ends."
+
         action={
           <Button size="sm" variant="ghost" className="h-7 text-[11px] font-semibold uppercase tracking-wider text-accent hover:text-accent" onClick={() => dispatch({ type: "addPause" })}>
             <Plus className="mr-1 size-3" /> Add
