@@ -78,6 +78,8 @@ export function LoanConfigPanel() {
       {/* Rate Changes */}
       <Card
         title="Rate Schedule"
+        info="Model future interest rate revisions (RBI / bank repricing). For each change set the month it takes effect and the new rate, then choose: 'Keep EMI' (tenure adjusts) or 'Keep tenure' (EMI is recalculated)."
+
         action={
           <Button
             size="sm"
