@@ -51,6 +51,9 @@ function reducer(state: LoanInputs, action: Action): LoanInputs {
       return { ...state, ...action.patch };
     case "patchStepUp":
       return { ...state, stepUp: { ...state.stepUp, ...action.patch } };
+    case "patchUpfront":
+      return { ...state, upfront: { ...state.upfront, ...action.patch } };
+
     case "addRate":
       return {
         ...state,
