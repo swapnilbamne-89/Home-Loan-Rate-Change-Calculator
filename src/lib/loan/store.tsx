@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useReducer, type ReactNode } from "react";
-import type { LoanInputs, PauseWindow, Prepayment, RateChange } from "./types";
+import type { LoanInputs, PauseWindow, Prepayment, RateChange, UpfrontCosts } from "./types";
 import { generateOriginalSchedule, generateSchedule } from "./calculator";
 
 const defaultInputs: LoanInputs = {
@@ -11,7 +11,22 @@ const defaultInputs: LoanInputs = {
   stepUp: { extraEmisPerYear: 1, incrementMode: "percent", annualIncrementPct: 5, annualIncrementAmount: 0, applyMonth: 3, startYear: 2 },
   pauseWindows: [],
   prepayments: [],
+  upfront: {
+    processingFeeMode: "percent",
+    processingFeePct: 0.5,
+    processingFeeAmount: 0,
+    processingFeeGstPct: 18,
+    processingFeeDeductedFromDisbursement: true,
+    propertyValue: 0,
+    stampDutyPct: 5,
+    registrationPct: 1,
+    modtPct: 0.2,
+    insurancePremium: 0,
+    legalValuationFee: 5000,
+    otherCharges: 0,
+  },
 };
+
 
 type Action =
   | { type: "patch"; patch: Partial<LoanInputs> }
