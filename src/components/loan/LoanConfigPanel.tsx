@@ -3,26 +3,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Plus, Trash2, Info } from "lucide-react";
 import { NumberInput } from "./NumberInput";
 
 function InfoHint({ text }: { text: string }) {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label="What is this?"
-          className="inline-flex size-4 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        >
-          <Info className="size-3.5" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent side="top" align="start" className="w-72 text-xs leading-relaxed">
-        {text}
-      </PopoverContent>
-    </Popover>
+    <span
+      tabIndex={0}
+      role="img"
+      aria-label={text}
+      title={text}
+      className="inline-flex size-4 cursor-help items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-accent focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+    >
+      <Info className="size-3.5" />
+    </span>
   );
 }
 
