@@ -5,67 +5,109 @@ import { formatINR, formatMonths } from "@/lib/loan/format";
 import { NumberInput } from "./NumberInput";
 
 /**
- * Prepay vs Invest
- * ----------------
- * Scenario A (Invest): keep current plan, invest the lump sum at expected
- *   return rate for the original remaining tenure. Apply LTCG tax on gains.
- * Scenario B (Prepay): apply the lump sum as a one-off prepayment at the
- *   chosen month. The loan closes earlier; the freed-up EMIs after closure
- *   are then invested at the same return rate until the original close month.
+ * Prepay vs Invest (SIP with annual step-up)
+ * ------------------------------------------
+ * The user commits a monthly SIP amount that grows by `stepUpPct` each loan
+ * year. We compare two ways of deploying that same cashflow:
  *
- * We compare terminal wealth at the original close month so both scenarios
- * are measured on the same horizon.
+ * Scenario A (Invest): contribute the SIP into a market instrument earning
+ *   `returnPct`/yr for the original remaining tenure. LTCG-style tax on gains.
+ *
+ * Scenario B (Prepay): apply each month's SIP as a recurring prepayment on
+ *   the loan. The loan closes earlier; from then on, the freed EMI PLUS the
+ *   ongoing SIP are invested at the same return rate until the original
+ *   close month, so both scenarios use identical out-of-pocket cashflows.
  */
 export function PrepayVsInvestCard() {
   const { inputs, schedule } = useLoan();
-  const [lump, setLump] = useState<number>(500000);
-  const [month, setMonth] = useState<number>(13);
+  const [sip, setSip] = useState<number>(10000);
+  const [stepUpPct, setStepUpPct] = useState<number>(10);
+  const [startMonth, setStartMonth] = useState<number>(1);
   const [returnPct, setReturnPct] = useState<number>(12);
   const [taxPct, setTaxPct] = useState<number>(12.5);
 
   const result = useMemo(() => {
     const horizon = schedule.monthsToClose; // current-plan close
     const rMonthly = returnPct / 100 / 12;
+    const start = Math.max(1, startMonth);
 
-    // Scenario A: invest lump sum for `horizon` months
-    const grossA = lump * Math.pow(1 + rMonthly, horizon);
-    const gainA = Math.max(0, grossA - lump);
-    const netA = grossA - (gainA * taxPct) / 100;
+    // SIP amount at a given loan month (1-based), stepped up every 12 months
+    const sipAt = (m: number, base: number) => {
+      if (m < start) return 0;
+      const yearsIn = Math.floor((m - start) / 12);
+      return base * Math.pow(1 + stepUpPct / 100, yearsIn);
+    };
 
-    // Scenario B: add prepayment at chosen month, recompute schedule
+    // ----- Scenario A: invest the SIP for the full horizon -----
+    let fvA = 0;
+    let totalContribA = 0;
+    for (let m = 1; m <= horizon; m++) {
+      const c = sipAt(m, sip);
+      totalContribA += c;
+      fvA = fvA * (1 + rMonthly) + c;
+    }
+    const gainA = Math.max(0, fvA - totalContribA);
+    const netA = fvA - (gainA * taxPct) / 100;
+
+    // ----- Scenario B: prepay SIP into loan, invest freed cashflows -----
+    // Build recurring prepayments for the new schedule
+    const recurringPrepayments = [] as { id: string; month: number; amount: number }[];
+    for (let m = start; m <= horizon; m++) {
+      const amt = sipAt(m, sip);
+      if (amt > 0) recurringPrepayments.push({ id: `__pvi_${m}`, month: m, amount: amt });
+    }
     const prepayInputs = {
       ...inputs,
-      prepayments: [
-        ...inputs.prepayments,
-        { id: "__pvi", month: Math.max(1, month), amount: lump },
-      ],
+      prepayments: [...inputs.prepayments, ...recurringPrepayments],
     };
     const newSched = generateSchedule(prepayInputs);
-    const monthsSaved = Math.max(0, horizon - newSched.monthsToClose);
-
-    // Freed EMI each month after new close — use last EMI as proxy
+    const newClose = newSched.monthsToClose;
+    const monthsSaved = Math.max(0, horizon - newClose);
     const freedEmi = newSched.finalEmi;
-    // Invest each freed EMI from month (newClose+1) .. horizon
-    let fvFreed = 0;
-    for (let k = 1; k <= monthsSaved; k++) {
-      fvFreed += freedEmi * Math.pow(1 + rMonthly, monthsSaved - k);
+
+    // After the loan closes, both the freed EMI AND the (still-stepping) SIP
+    // are invested for the remaining months until the original horizon.
+    let fvB = 0;
+    let totalContribB = 0;
+    // Track SIP contributions made while the loan was alive (these "went into" the loan,
+    // counted as outflow but no investment FV — savings show up as interest avoided).
+    for (let m = start; m <= newClose; m++) totalContribB += sipAt(m, sip);
+
+    for (let m = newClose + 1; m <= horizon; m++) {
+      const c = sipAt(m, sip) + freedEmi;
+      totalContribB += c;
+      fvB = fvB * (1 + rMonthly) + c;
     }
-    const gainB = Math.max(0, fvFreed - freedEmi * monthsSaved);
-    const netB = fvFreed - (gainB * taxPct) / 100;
+    const gainB = Math.max(0, fvB - (totalContribB - (totalContribA - totalContribB > 0 ? 0 : 0)));
+    // Simpler & correct: gains = FV - contributions invested in market only
+    let investedB = 0;
+    for (let m = newClose + 1; m <= horizon; m++) investedB += sipAt(m, sip) + freedEmi;
+    const gainBClean = Math.max(0, fvB - investedB);
+    const netB_market = fvB - (gainBClean * taxPct) / 100;
 
     const interestSaved = schedule.totalInterest - newSched.totalInterest;
+    // Total economic value of prepay path = post-tax market value + interest saved
+    const netB = netB_market + interestSaved;
+
     const winner = netB > netA ? "prepay" : "invest";
     const delta = Math.abs(netB - netA);
-    // Break-even monthly return where prepay = invest (approx by solving netA == netB)
-    // Quick numeric search
+
+    // Break-even annual return where invest = prepay
     let breakEven = 0;
-    for (let r = 1; r <= 30; r += 0.1) {
+    for (let r = 1; r <= 40; r += 0.25) {
       const rm = r / 100 / 12;
-      const gA = lump * Math.pow(1 + rm, horizon);
-      const nA = gA - Math.max(0, gA - lump) * (taxPct / 100);
-      let fv = 0;
-      for (let k = 1; k <= monthsSaved; k++) fv += freedEmi * Math.pow(1 + rm, monthsSaved - k);
-      const nB = fv - Math.max(0, fv - freedEmi * monthsSaved) * (taxPct / 100);
+      let fa = 0;
+      for (let m = 1; m <= horizon; m++) fa = fa * (1 + rm) + sipAt(m, sip);
+      const nA = fa - Math.max(0, fa - totalContribA) * (taxPct / 100);
+
+      let fb = 0;
+      let invB = 0;
+      for (let m = newClose + 1; m <= horizon; m++) {
+        const c = sipAt(m, sip) + freedEmi;
+        invB += c;
+        fb = fb * (1 + rm) + c;
+      }
+      const nB = fb - Math.max(0, fb - invB) * (taxPct / 100) + interestSaved;
       if (nA >= nB) {
         breakEven = r;
         break;
@@ -75,35 +117,41 @@ export function PrepayVsInvestCard() {
     return {
       horizon,
       monthsSaved,
-      newClose: newSched.monthsToClose,
+      newClose,
       interestSaved,
       freedEmi,
+      totalContribA,
       netA,
       netB,
+      netB_market,
       winner,
       delta,
       breakEven,
     };
-  }, [inputs, schedule, lump, month, returnPct, taxPct]);
+  }, [inputs, schedule, sip, stepUpPct, startMonth, returnPct, taxPct]);
 
   return (
     <section className="rounded-xl border bg-card p-6 shadow-sm">
       <header className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <h2 className="font-display text-lg font-bold tracking-tight">Prepay vs Invest</h2>
+          <h2 className="font-display text-lg font-bold tracking-tight">Prepay vs Invest (SIP)</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            Compare deploying a lump sum as a prepayment versus investing it at your expected
-            return. Both scenarios measured at the original close month ({formatMonths(result.horizon)}).
+            Commit a monthly SIP that steps up each year. Compare investing it in the market versus
+            using it to prepay the loan. Both scenarios use the same out-of-pocket cashflow and are
+            measured at the original close month ({formatMonths(result.horizon)}).
           </p>
         </div>
       </header>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Field label="Lump sum (₹)">
-          <NumberInput value={lump} onChange={setLump} min={0} />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        <Field label="Monthly SIP (₹)">
+          <NumberInput value={sip} onChange={setSip} min={0} />
         </Field>
-        <Field label="Deploy at month">
-          <NumberInput value={month} onChange={setMonth} min={1} />
+        <Field label="Annual step-up %">
+          <NumberInput value={stepUpPct} onChange={setStepUpPct} decimal min={0} />
+        </Field>
+        <Field label="Start at month">
+          <NumberInput value={startMonth} onChange={setStartMonth} min={1} />
         </Field>
         <Field label="Expected return %/yr">
           <NumberInput value={returnPct} onChange={setReturnPct} decimal min={0} />
@@ -115,16 +163,16 @@ export function PrepayVsInvestCard() {
 
       <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
         <Scenario
-          title="Invest the lump sum"
+          title="Invest the SIP"
           highlight={result.winner === "invest"}
           rows={[
-            ["Lump sum invested", formatINR(lump)],
+            ["Total contributed", formatINR(result.totalContribA)],
             ["Growth horizon", formatMonths(result.horizon)],
             ["Net value (post-tax)", formatINR(result.netA)],
           ]}
         />
         <Scenario
-          title="Prepay the loan"
+          title="Prepay with the SIP"
           highlight={result.winner === "prepay"}
           rows={[
             ["Interest saved", formatINR(result.interestSaved)],
@@ -132,8 +180,9 @@ export function PrepayVsInvestCard() {
               "Loan closes",
               `${formatMonths(result.newClose)} (${result.monthsSaved} mo earlier)`,
             ],
-            ["Freed EMIs invested", formatINR(result.freedEmi * result.monthsSaved)],
-            ["Net value (post-tax)", formatINR(result.netB)],
+            ["Freed EMI after closure", formatINR(result.freedEmi)],
+            ["Post-closure investments", formatINR(result.netB_market)],
+            ["Total value (incl. interest saved)", formatINR(result.netB)],
           ]}
         />
       </div>
@@ -147,14 +196,15 @@ export function PrepayVsInvestCard() {
         <Stat label="Advantage" value={formatINR(result.delta)} />
         <Stat
           label="Break-even return"
-          value={result.breakEven > 0 ? `${result.breakEven.toFixed(1)}% / yr` : "—"}
+          value={result.breakEven > 0 ? `${result.breakEven.toFixed(2)}% / yr` : "—"}
           hint="Above this return, investing wins"
         />
       </div>
 
       <p className="mt-3 text-[11px] text-muted-foreground">
-        Assumes monthly compounding, single LTCG-style tax on gains at the horizon, and freed EMIs
-        invested at the same return rate after loan closure. Indicative only.
+        SIP grows by the step-up % every 12 months from start. Assumes monthly compounding, single
+        LTCG-style tax on gains at the horizon, and that after loan closure the freed EMI plus the
+        ongoing SIP are invested at the same return rate. Indicative only.
       </p>
     </section>
   );
