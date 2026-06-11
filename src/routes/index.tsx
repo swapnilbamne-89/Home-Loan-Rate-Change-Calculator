@@ -5,6 +5,7 @@ import { KpiTiles } from "@/components/loan/KpiTiles";
 import { BalanceChart, YearlyBreakdown } from "@/components/loan/Charts";
 import { ScheduleTable } from "@/components/loan/ScheduleTable";
 import { UpfrontCostsCard } from "@/components/loan/UpfrontCostsCard";
+import { PrepayVsInvestCard } from "@/components/loan/PrepayVsInvestCard";
 
 
 export const Route = createFileRoute("/")({
@@ -50,6 +51,7 @@ function HomePage() {
             </header>
             <KpiTiles />
             <UpfrontCostsCard />
+            <PrepayVsInvestCard />
 
             <BalanceChart />
             <YearlyBreakdown />
