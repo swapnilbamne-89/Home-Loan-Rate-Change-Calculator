@@ -6,6 +6,7 @@ import { BalanceChart, YearlyBreakdown } from "@/components/loan/Charts";
 import { ScheduleTable } from "@/components/loan/ScheduleTable";
 import { UpfrontCostsCard } from "@/components/loan/UpfrontCostsCard";
 import { PrepayVsInvestCard } from "@/components/loan/PrepayVsInvestCard";
+import { WhatIfCard } from "@/components/loan/WhatIfCard";
 
 
 export const Route = createFileRoute("/")({
@@ -51,6 +52,7 @@ function HomePage() {
             </header>
             <KpiTiles />
             <UpfrontCostsCard />
+            <WhatIfCard />
             <PrepayVsInvestCard />
 
             <BalanceChart />
