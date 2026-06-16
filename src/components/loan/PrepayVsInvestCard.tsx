@@ -63,7 +63,7 @@ export function PrepayVsInvestCard() {
     const newSched = generateSchedule(prepayInputs);
     const newClose = newSched.monthsToClose;
     const monthsSaved = Math.max(0, horizon - newClose);
-    const freedEmi = newSched.finalEmi;
+    const freedEmi = newSched.steadyEmi;
 
     // After the loan closes, both the freed EMI AND the (still-stepping) SIP
     // are invested for the remaining months until the original horizon.

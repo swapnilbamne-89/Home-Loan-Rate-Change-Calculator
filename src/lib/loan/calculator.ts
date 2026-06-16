@@ -138,6 +138,12 @@ export function generateSchedule(inputs: LoanInputs): ScheduleResult {
     totalExtra,
     monthsToClose: rows.length,
     finalEmi: rows.length ? rows[rows.length - 1].emi : 0,
+    steadyEmi:
+      rows.length >= 2
+        ? rows[rows.length - 2].emi
+        : rows.length
+          ? rows[rows.length - 1].emi
+          : 0,
   };
 }
 
