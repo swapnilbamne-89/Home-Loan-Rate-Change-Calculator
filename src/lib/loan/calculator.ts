@@ -79,7 +79,11 @@ export function generateSchedule(inputs: LoanInputs): ScheduleResult {
 
     // Recurring extra EMI bonus (frequency per year) — apply on step-up month only, not paused
     let extra = 0;
-    if (isStepUpMonth && inputs.stepUp.extraEmisPerYear > 0) {
+    if (
+      isStepUpMonth &&
+      inputs.stepUp.extraEmisPerYear > 0 &&
+      !inAnyWindow(m, inputs.pauseWindows)
+    ) {
       extra = currentEmi * inputs.stepUp.extraEmisPerYear;
     }
 
