@@ -83,4 +83,5 @@ export interface ScheduleResult {
   totalExtra: number;
   monthsToClose: number;
   finalEmi: number;
+  steadyEmi: number;
 }

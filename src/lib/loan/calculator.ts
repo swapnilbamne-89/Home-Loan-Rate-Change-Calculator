@@ -79,7 +79,11 @@ export function generateSchedule(inputs: LoanInputs): ScheduleResult {
 
     // Recurring extra EMI bonus (frequency per year) — apply on step-up month only, not paused
     let extra = 0;
-    if (isStepUpMonth && inputs.stepUp.extraEmisPerYear > 0) {
+    if (
+      isStepUpMonth &&
+      inputs.stepUp.extraEmisPerYear > 0 &&
+      !inAnyWindow(m, inputs.pauseWindows)
+    ) {
       extra = currentEmi * inputs.stepUp.extraEmisPerYear;
     }
 
@@ -134,6 +138,12 @@ export function generateSchedule(inputs: LoanInputs): ScheduleResult {
     totalExtra,
     monthsToClose: rows.length,
     finalEmi: rows.length ? rows[rows.length - 1].emi : 0,
+    steadyEmi:
+      rows.length >= 2
+        ? rows[rows.length - 2].emi
+        : rows.length
+          ? rows[rows.length - 1].emi
+          : 0,
   };
 }
 
