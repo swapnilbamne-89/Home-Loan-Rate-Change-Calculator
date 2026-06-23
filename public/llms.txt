@@ -1,0 +1,7 @@
+# LedgerLoan — Home Loan EMI Planner
+
+> Free Indian home loan calculator that models interest rate changes, annual EMI step-ups, pause windows, one-off prepayments, upfront fees, prepay-vs-invest comparisons, and what-if scenarios.
+
+## Pages
+
+- [Home](/): Full repayment planner with amortization schedule, KPI tiles, balance charts, upfront cost breakdown, prepay-vs-invest comparison, and what-if scenario analysis.
