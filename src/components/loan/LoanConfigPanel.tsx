@@ -1,3 +1,4 @@
+import { useId, cloneElement, isValidElement, type ReactElement } from "react";
 import { useLoan } from "@/lib/loan/store";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,7 +121,7 @@ export function LoanConfigPanel() {
                       </SelectContent>
                     </Select>
                   </Field>
-                  <Button size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removeRate", id: r.id })}>
+                  <Button aria-label="Remove" size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removeRate", id: r.id })}>
                     <Trash2 className="size-4" />
                   </Button>
                 </div>
@@ -229,7 +230,7 @@ export function LoanConfigPanel() {
                     onChange={(n) => dispatch({ type: "updatePause", id: p.id, patch: { endMonth: n } })}
                   />
                 </Field>
-                <Button size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePause", id: p.id })}>
+                <Button aria-label="Remove" size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePause", id: p.id })}>
                   <Trash2 className="size-4" />
                 </Button>
               </div>
@@ -267,7 +268,7 @@ export function LoanConfigPanel() {
                     onChange={(n) => dispatch({ type: "updatePrepay", id: p.id, patch: { amount: n } })}
                   />
                 </Field>
-                <Button size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePrepay", id: p.id })}>
+                <Button aria-label="Remove" size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePrepay", id: p.id })}>
                   <Trash2 className="size-4" />
                 </Button>
               </div>
@@ -403,7 +404,7 @@ function Card({ title, children, action, info }: { title: string; children: Reac
     <section className="rounded-xl border bg-card p-5 shadow-sm">
       <header className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <h3 className="font-display text-base font-semibold tracking-tight text-foreground">{title}</h3>
+          <h2 className="font-display text-base font-semibold tracking-tight text-foreground">{title}</h2>
           {info && <InfoHint text={info} />}
         </div>
         {action}
@@ -414,10 +415,23 @@ function Card({ title, children, action, info }: { title: string; children: Reac
 }
 
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
+  const id = useId();
+  const child = isValidElement(children)
+    ? cloneElement(children as ReactElement<{ id?: string; "aria-label"?: string }>, {
+        id: (children as ReactElement<{ id?: string }>).props.id ?? id,
+        "aria-label":
+          (children as ReactElement<{ "aria-label"?: string }>).props["aria-label"] ?? label,
+      })
+    : children;
   return (
     <div className={className}>
-      <Label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{label}</Label>
-      {children}
+      <Label
+        htmlFor={id}
+        className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground"
+      >
+        {label}
+      </Label>
+      {child}
     </div>
   );
 }

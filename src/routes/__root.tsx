@@ -80,6 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Home loan EMI planner" },
       { name: "description", content: "Loan Planner Pro calculates home loan repayments with flexible interest rate and EMI adjustments." },
       { name: "author", content: "Lovable" },
+      { property: "og:site_name", content: "LedgerLoan" },
       { property: "og:title", content: "Home loan EMI planner" },
       { property: "og:description", content: "Loan Planner Pro calculates home loan repayments with flexible interest rate and EMI adjustments." },
       { property: "og:type", content: "website" },
@@ -98,6 +99,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap",
       },
       { rel: "stylesheet", href: appCss },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              name: "LedgerLoan",
+              url: "https://home-loan-emi-planner.lovable.app/",
+            },
+            {
+              "@type": "Organization",
+              name: "LedgerLoan",
+              url: "https://home-loan-emi-planner.lovable.app/",
+            },
+          ],
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,

@@ -12,10 +12,29 @@ import { WhatIfCard } from "@/components/loan/WhatIfCard";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Home Loan Repayment Calculator — Rate changes, step-up & prepayments" },
+      { title: "Home Loan EMI Planner — Rates, Step-up & Prepay" },
       { name: "description", content: "Model your home loan with multiple interest rate changes, annual EMI step-up, pause windows, and one-off prepayments. Schedule + charts." },
-      { property: "og:title", content: "Home Loan Repayment Calculator" },
+      { property: "og:title", content: "Home Loan EMI Planner" },
       { property: "og:description", content: "Advanced amortization with rate changes, step-up EMIs, and prepayments." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://home-loan-emi-planner.lovable.app/" },
+    ],
+    links: [{ rel: "canonical", href: "https://home-loan-emi-planner.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: "LedgerLoan — Home Loan EMI Planner",
+          description:
+            "Free home loan calculator that models rate changes, annual EMI step-ups, pause windows, one-off prepayments, upfront fees, and prepay-vs-invest comparisons.",
+          applicationCategory: "FinanceApplication",
+          operatingSystem: "Any",
+          url: "https://home-loan-emi-planner.lovable.app/",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+        }),
+      },
     ],
   }),
   component: HomePage,

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://home-loan-emi-planner.lovable.app/sitemap.xml
