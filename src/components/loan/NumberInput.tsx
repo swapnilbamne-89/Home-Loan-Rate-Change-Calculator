@@ -8,6 +8,8 @@ interface Props {
   min?: number;
   className?: string;
   placeholder?: string;
+  id?: string;
+  "aria-label"?: string;
 }
 
 /**
@@ -15,7 +17,7 @@ interface Props {
  * decimal points (e.g. "8." → "8.5") and clear the field without the parent
  * snapping the value back to "0" mid-keystroke.
  */
-export function NumberInput({ value, onChange, decimal, min, className, placeholder }: Props) {
+export function NumberInput({ value, onChange, decimal, min, className, placeholder, id, "aria-label": ariaLabel }: Props) {
   const [text, setText] = useState<string>(String(value ?? ""));
 
   // Sync from parent when the value changes externally (and doesn't match what we typed)
@@ -31,6 +33,8 @@ export function NumberInput({ value, onChange, decimal, min, className, placehol
 
   return (
     <Input
+      id={id}
+      aria-label={ariaLabel}
       inputMode={decimal ? "decimal" : "numeric"}
       className={className}
       placeholder={placeholder}
