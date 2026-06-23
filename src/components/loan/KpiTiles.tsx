@@ -6,7 +6,7 @@ function Tile({ label, value, hint, accent }: { label: string; value: string; hi
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm">
       <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
-      <h3 className={`mt-1 font-display text-2xl font-bold tracking-tight ${color}`}>{value}</h3>
+      <p className={`mt-1 font-display text-2xl font-bold tracking-tight ${color}`}>{value}</p>
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
   );

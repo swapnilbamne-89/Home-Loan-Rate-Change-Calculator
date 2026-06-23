@@ -30,7 +30,7 @@ export function UpfrontCostsCard() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             True Cost of Borrowing
           </p>
-          <h3 className="font-display text-lg font-semibold tracking-tight">Upfront Costs & Effective APR</h3>
+          <h2 className="font-display text-lg font-semibold tracking-tight">Upfront Costs & Effective APR</h2>
         </div>
         <div className="text-right">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
