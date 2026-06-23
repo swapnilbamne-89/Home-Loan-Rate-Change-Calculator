@@ -121,7 +121,7 @@ export function LoanConfigPanel() {
                       </SelectContent>
                     </Select>
                   </Field>
-                  <Button size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removeRate", id: r.id })}>
+                  <Button aria-label="Remove" size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removeRate", id: r.id })}>
                     <Trash2 className="size-4" />
                   </Button>
                 </div>
@@ -230,7 +230,7 @@ export function LoanConfigPanel() {
                     onChange={(n) => dispatch({ type: "updatePause", id: p.id, patch: { endMonth: n } })}
                   />
                 </Field>
-                <Button size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePause", id: p.id })}>
+                <Button aria-label="Remove" size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePause", id: p.id })}>
                   <Trash2 className="size-4" />
                 </Button>
               </div>
@@ -268,7 +268,7 @@ export function LoanConfigPanel() {
                     onChange={(n) => dispatch({ type: "updatePrepay", id: p.id, patch: { amount: n } })}
                   />
                 </Field>
-                <Button size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePrepay", id: p.id })}>
+                <Button aria-label="Remove" size="icon" variant="ghost" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => dispatch({ type: "removePrepay", id: p.id })}>
                   <Trash2 className="size-4" />
                 </Button>
               </div>
