@@ -97,6 +97,7 @@ bun run dev
 
 Open the URL printed in the terminal.
 
+Use this calculator demo [https://home-loan-emi-planner.lovable.app/|here].
 ---
 
 ## Disclaimer
