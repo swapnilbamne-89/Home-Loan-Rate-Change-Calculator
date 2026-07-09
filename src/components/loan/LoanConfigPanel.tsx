@@ -31,10 +31,13 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function LoanConfigPanel() {
+export function LoanConfigPanel({ columns = false }: { columns?: boolean } = {}) {
   const { inputs, dispatch } = useLoan();
+  const wrapCls = columns
+    ? "gap-6 md:columns-2 xl:columns-3 [&>section]:mb-6 [&>section]:break-inside-avoid"
+    : "space-y-6";
   return (
-    <div className="space-y-6">
+    <div className={wrapCls}>
       {/* Basics */}
       <Card title="Loan Basics" info="The core inputs for your home loan: principal borrowed (₹), starting annual interest rate, total tenure in years, and the disbursement / first-EMI date. All other sections build on these values.">
         <div className="space-y-4">
