@@ -7,6 +7,10 @@ import { ScheduleTable } from "@/components/loan/ScheduleTable";
 import { UpfrontCostsCard } from "@/components/loan/UpfrontCostsCard";
 import { PrepayVsInvestCard } from "@/components/loan/PrepayVsInvestCard";
 import { WhatIfCard } from "@/components/loan/WhatIfCard";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { SlidersHorizontal } from "lucide-react";
 
 
 export const Route = createFileRoute("/")({
