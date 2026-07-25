@@ -1,14 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 import { LoanProvider, useLoan } from "@/lib/loan/store";
 import { LoanConfigPanel } from "@/components/loan/LoanConfigPanel";
-import { BalanceChart, YearlyBreakdown } from "@/components/loan/Charts";
-import { ScheduleTable } from "@/components/loan/ScheduleTable";
-import { UpfrontCostsCard } from "@/components/loan/UpfrontCostsCard";
-import { PrepayVsInvestCard } from "@/components/loan/PrepayVsInvestCard";
-import { WhatIfCard } from "@/components/loan/WhatIfCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { formatINR, formatMonths } from "@/lib/loan/format";
 import { Sliders, LineChart, Coins, Scale, Wallet, CalendarDays } from "lucide-react";
+
+const BalanceChart = lazy(() => import("@/components/loan/Charts").then(m => ({ default: m.BalanceChart })));
+const YearlyBreakdown = lazy(() => import("@/components/loan/Charts").then(m => ({ default: m.YearlyBreakdown })));
+const ScheduleTable = lazy(() => import("@/components/loan/ScheduleTable").then(m => ({ default: m.ScheduleTable })));
+const UpfrontCostsCard = lazy(() => import("@/components/loan/UpfrontCostsCard").then(m => ({ default: m.UpfrontCostsCard })));
+const PrepayVsInvestCard = lazy(() => import("@/components/loan/PrepayVsInvestCard").then(m => ({ default: m.PrepayVsInvestCard })));
+const WhatIfCard = lazy(() => import("@/components/loan/WhatIfCard").then(m => ({ default: m.WhatIfCard })));
+
+const TabFallback = () => (
+  <div className="grid place-items-center py-16 text-xs text-muted-foreground">Loading…</div>
+);
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -117,28 +124,28 @@ function HomePage() {
 
             <TabsContent value="overview" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="02 · Trajectory" title="Balance over time" hint="See principal, interest, and closing balance across the tenure." />
-              <BalanceChart />
+              <Suspense fallback={<TabFallback />}><BalanceChart /></Suspense>
             </TabsContent>
 
             <TabsContent value="costs" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="03 · True cost" title="Upfront fees & effective APR" hint="Processing, stamp duty, MODT, insurance — folded into APR." />
-              <UpfrontCostsCard />
+              <Suspense fallback={<TabFallback />}><UpfrontCostsCard /></Suspense>
             </TabsContent>
 
             <TabsContent value="whatif" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="04 · Simulate" title="What-if scenarios" hint="Compare alternative rate, tenure, and prepay plans side by side." />
-              <WhatIfCard />
+              <Suspense fallback={<TabFallback />}><WhatIfCard /></Suspense>
             </TabsContent>
 
             <TabsContent value="prepay" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="05 · Trade-off" title="Prepay vs Invest" hint="Should the surplus go to the loan or the market? Model both." />
-              <PrepayVsInvestCard />
+              <Suspense fallback={<TabFallback />}><PrepayVsInvestCard /></Suspense>
             </TabsContent>
 
             <TabsContent value="schedule" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="06 · Ledger" title="Yearly & monthly schedule" hint="Full amortization, exportable to CSV." />
-              <YearlyBreakdown />
-              <ScheduleTable />
+              <Suspense fallback={<TabFallback />}><YearlyBreakdown /></Suspense>
+              <Suspense fallback={<TabFallback />}><ScheduleTable /></Suspense>
             </TabsContent>
           </Tabs>
         </main>
