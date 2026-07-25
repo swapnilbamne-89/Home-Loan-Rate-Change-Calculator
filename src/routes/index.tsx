@@ -147,7 +147,6 @@ function HomePage() {
               <Suspense fallback={<TabFallback />}><YearlyBreakdown /></Suspense>
               <Suspense fallback={<TabFallback />}><ScheduleTable /></Suspense>
             </TabsContent>
-            </TabsContent>
           </Tabs>
         </main>
 
