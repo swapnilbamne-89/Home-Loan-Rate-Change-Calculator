@@ -124,28 +124,29 @@ function HomePage() {
 
             <TabsContent value="overview" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="02 · Trajectory" title="Balance over time" hint="See principal, interest, and closing balance across the tenure." />
-              <BalanceChart />
+              <Suspense fallback={<TabFallback />}><BalanceChart /></Suspense>
             </TabsContent>
 
             <TabsContent value="costs" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="03 · True cost" title="Upfront fees & effective APR" hint="Processing, stamp duty, MODT, insurance — folded into APR." />
-              <UpfrontCostsCard />
+              <Suspense fallback={<TabFallback />}><UpfrontCostsCard /></Suspense>
             </TabsContent>
 
             <TabsContent value="whatif" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="04 · Simulate" title="What-if scenarios" hint="Compare alternative rate, tenure, and prepay plans side by side." />
-              <WhatIfCard />
+              <Suspense fallback={<TabFallback />}><WhatIfCard /></Suspense>
             </TabsContent>
 
             <TabsContent value="prepay" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="05 · Trade-off" title="Prepay vs Invest" hint="Should the surplus go to the loan or the market? Model both." />
-              <PrepayVsInvestCard />
+              <Suspense fallback={<TabFallback />}><PrepayVsInvestCard /></Suspense>
             </TabsContent>
 
             <TabsContent value="schedule" className="mt-8 space-y-6">
               <SectionRibbon eyebrow="06 · Ledger" title="Yearly & monthly schedule" hint="Full amortization, exportable to CSV." />
-              <YearlyBreakdown />
-              <ScheduleTable />
+              <Suspense fallback={<TabFallback />}><YearlyBreakdown /></Suspense>
+              <Suspense fallback={<TabFallback />}><ScheduleTable /></Suspense>
+            </TabsContent>
             </TabsContent>
           </Tabs>
         </main>
