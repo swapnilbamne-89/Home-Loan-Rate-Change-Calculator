@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "ledgerloan-mcp",
+      "version": "0.1.0",
+      "title": "LedgerLoan — Home Loan EMI Planner"
+    },
+    "tools": [
+      {
+        "name": "compute_loan_schedule",
+        "title": "Compute home loan repayment schedule",
+        "description": "Computes an Indian home loan amortization schedule with support for multiple mid-tenure rate changes, annual EMI step-ups (percent or fixed rupee amount), pause windows, one-off prepayments, and upfront costs (processing fee, GST, stamp duty, MODT, insurance) with an effective APR. Returns totals, month-count-to-close, starting/steady/final EMI, an upfront-cost breakdown, and a vanilla-baseline comparison. Amounts are in INR.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "loanAmount": {
+              "type": "number",
+              "description": "Principal in INR, e.g. 5000000"
+            },
+            "startRatePct": {
+              "type": "number",
+              "description": "Starting annual interest rate, e.g. 8.5"
+            },
+            "tenureYears": {
+              "type": "number",
+              "description": "Original tenure in years, e.g. 20"
+            },
+            "startDate": {
+              "default": "2026-07-25",
+              "type": "string",
+              "description": "Loan start date in YYYY-MM-DD, e.g. 2025-01-01"
+            },
+            "rateChanges": {
+              "default": [],
+              "description": "List of rate revisions taking effect at specific loan months",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "effectiveMonth": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "ratePct": {
+                    "type": "number"
+                  },
+                  "behavior": {
+                    "default": "keep-tenure",
+                    "type": "string",
+                    "enum": [
+                      "keep-emi",
+                      "keep-tenure"
+                    ]
+                  }
+                },
+                "required": [
+                  "effectiveMonth",
+                  "ratePct"
+                ]
+              }
+            },
+            "stepUp": {
+              "default": {
+                "extraEmisPerYear": 0,
+                "incrementMode": "percent",
+                "annualIncrementPct": 0,
+                "annualIncrementAmount": 0,
+                "applyMonth": 12,
+                "startYear": 2
+              },
+              "description": "Annual EMI step-up plan",
+              "type": "object",
+              "properties": {
+                "extraEmisPerYear": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "incrementMode": {
+                  "default": "percent",
+                  "type": "string",
+                  "enum": [
+                    "percent",
+                    "amount"
+                  ]
+                },
+                "annualIncrementPct": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "annualIncrementAmount": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "applyMonth": {
+                  "default": 12,
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 12
+                },
+                "startYear": {
+                  "default": 2,
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "pauseWindows": {
+              "default": [],
+              "description": "Month ranges where step-up and recurring extra EMIs are paused",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startMonth": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "endMonth": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "startMonth",
+                  "endMonth"
+                ]
+              }
+            },
+            "prepayments": {
+              "default": [],
+              "description": "One-off principal prepayments at specific loan months",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "month": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "amount": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "month",
+                  "amount"
+                ]
+              }
+            },
+            "upfront": {
+              "default": {
+                "processingFeeMode": "percent",
+                "processingFeePct": 0,
+                "processingFeeAmount": 0,
+                "processingFeeGstPct": 18,
+                "processingFeeDeductedFromDisbursement": true,
+                "propertyValue": 0,
+                "stampDutyPct": 0,
+                "registrationPct": 0,
+                "modtPct": 0,
+                "insurancePremium": 0,
+                "legalValuationFee": 0,
+                "otherCharges": 0
+              },
+              "description": "Upfront fees and charges for effective APR",
+              "type": "object",
+              "properties": {
+                "processingFeeMode": {
+                  "default": "percent",
+                  "type": "string",
+                  "enum": [
+                    "percent",
+                    "amount"
+                  ]
+                },
+                "processingFeePct": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "processingFeeAmount": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "processingFeeGstPct": {
+                  "default": 18,
+                  "type": "number"
+                },
+                "processingFeeDeductedFromDisbursement": {
+                  "default": true,
+                  "type": "boolean"
+                },
+                "propertyValue": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "stampDutyPct": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "registrationPct": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "modtPct": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "insurancePremium": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "legalValuationFee": {
+                  "default": 0,
+                  "type": "number"
+                },
+                "otherCharges": {
+                  "default": 0,
+                  "type": "number"
+                }
+              }
+            },
+            "includeSchedule": {
+              "default": false,
+              "description": "If true, include the full monthly schedule (can be large)",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "loanAmount",
+            "startRatePct",
+            "tenureYears"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
