@@ -255,7 +255,7 @@ function Stat({ label, value, hint, accent }: { label: string; value: string; hi
       <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         {label}
       </p>
-      <p className={`mt-0.5 font-display text-lg font-bold tracking-tight ${accent ? "text-accent" : ""}`}>
+      <p className={`mt-0.5 font-display text-lg font-bold tracking-tight ${accent ? "text-gold-ink" : ""}`}>
         {value}
       </p>
       {hint && <p className="mt-0.5 text-[11px] text-muted-foreground">{hint}</p>}

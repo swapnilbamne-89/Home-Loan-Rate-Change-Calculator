@@ -79,7 +79,7 @@ function HomePage() {
               </div>
               <div>
                 <div className="font-display text-lg font-bold tracking-tight">LedgerLoan</div>
-                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">Repayment Studio</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold-ink">Repayment Studio</div>
               </div>
             </div>
             <div className="hidden items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:flex">
@@ -96,7 +96,7 @@ function HomePage() {
               Advanced amortization engine
             </div>
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight md:text-5xl">
-              A precise studio for your <span className="italic text-accent">home loan</span> repayment.
+              A precise studio for your <span className="italic text-gold-ink">home loan</span> repayment.
             </h1>
             <p className="mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
               Rate revisions, annual step-ups, pause windows, one-off prepayments, upfront costs, and prepay-vs-invest — every lever, one canvas.
@@ -179,7 +179,7 @@ function SectionRibbon({ eyebrow, title, hint }: { eyebrow: string; title: strin
   return (
     <div className="mb-6 flex items-end justify-between gap-4 border-b border-foreground/10 pb-4">
       <div>
-        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-accent">{eyebrow}</div>
+        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-gold-ink">{eyebrow}</div>
         <h2 className="mt-1 font-display text-2xl font-bold tracking-tight md:text-3xl">{title}</h2>
       </div>
       <p className="hidden max-w-sm text-right text-xs text-muted-foreground md:block">{hint}</p>
@@ -236,7 +236,7 @@ function MiniTile({ label, value, hint, gold = false }: { label: string; value: 
         <span aria-hidden className="absolute right-4 top-4 size-2 rounded-full bg-accent shadow-[0_0_0_4px_color-mix(in_oklab,var(--gold)_20%,transparent)]" />
       )}
       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-      <p className={`mt-2 font-display text-xl font-bold tracking-tight md:text-2xl ${gold ? "text-accent" : "text-foreground"}`}>
+      <p className={`mt-2 font-display text-xl font-bold tracking-tight md:text-2xl ${gold ? "text-gold-ink" : "text-foreground"}`}>
         {value}
       </p>
       {hint && <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p>}

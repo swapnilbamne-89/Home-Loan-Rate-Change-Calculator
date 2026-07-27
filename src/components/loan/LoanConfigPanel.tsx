@@ -82,7 +82,7 @@ export function LoanConfigPanel({ columns = false }: { columns?: boolean } = {})
           <Button
             size="sm"
             variant="ghost"
-            className="h-7 text-[11px] font-semibold uppercase tracking-wider text-accent hover:text-accent"
+            className="h-7 text-[11px] font-semibold uppercase tracking-wider text-gold-ink hover:text-gold-ink"
             onClick={() => dispatch({ type: "addRate" })}
           >
             <Plus className="mr-1 size-3" /> Add
@@ -210,7 +210,7 @@ export function LoanConfigPanel({ columns = false }: { columns?: boolean } = {})
         info="Temporarily halt the annual EMI step-up and recurring extra EMIs during tight-cash periods (job switch, maternity, big expense). Define a From → To month range; normal EMI and interest continue, step-ups resume after the window ends."
 
         action={
-          <Button size="sm" variant="ghost" className="h-7 text-[11px] font-semibold uppercase tracking-wider text-accent hover:text-accent" onClick={() => dispatch({ type: "addPause" })}>
+          <Button size="sm" variant="ghost" className="h-7 text-[11px] font-semibold uppercase tracking-wider text-gold-ink hover:text-gold-ink" onClick={() => dispatch({ type: "addPause" })}>
             <Plus className="mr-1 size-3" /> Add
           </Button>
         }
@@ -248,7 +248,7 @@ export function LoanConfigPanel({ columns = false }: { columns?: boolean } = {})
         info="Lump-sum payments made in specific months (e.g. annual bonus, tax refund). Each prepayment reduces outstanding principal in that month, cutting future interest and shortening tenure while keeping EMI unchanged."
 
         action={
-          <Button size="sm" variant="ghost" className="h-7 text-[11px] font-semibold uppercase tracking-wider text-accent hover:text-accent" onClick={() => dispatch({ type: "addPrepay" })}>
+          <Button size="sm" variant="ghost" className="h-7 text-[11px] font-semibold uppercase tracking-wider text-gold-ink hover:text-gold-ink" onClick={() => dispatch({ type: "addPrepay" })}>
             <Plus className="mr-1 size-3" /> Add
           </Button>
         }

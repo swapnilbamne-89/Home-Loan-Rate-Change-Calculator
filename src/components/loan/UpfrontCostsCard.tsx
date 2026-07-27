@@ -9,7 +9,7 @@ function Row({ label, value, sub, strong }: { label: string; value: string; sub?
         <div className={`text-sm ${strong ? "font-semibold text-foreground" : "text-foreground/90"}`}>{label}</div>
         {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
       </div>
-      <div className={`font-display tabular-nums ${strong ? "text-base font-bold text-accent" : "text-sm text-foreground"}`}>
+      <div className={`font-display tabular-nums ${strong ? "text-base font-bold text-gold-ink" : "text-sm text-foreground"}`}>
         {value}
       </div>
     </div>
@@ -36,7 +36,7 @@ export function UpfrontCostsCard() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Effective APR
           </p>
-          <p className="font-display text-2xl font-bold text-accent">
+          <p className="font-display text-2xl font-bold text-gold-ink">
             {b.effectiveAprPct > 0 ? `${b.effectiveAprPct.toFixed(2)}%` : "—"}
           </p>
           <p className="text-[10px] text-muted-foreground">vs nominal {inputs.startRatePct}%</p>

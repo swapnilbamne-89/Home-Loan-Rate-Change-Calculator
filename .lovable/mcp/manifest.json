@@ -38,7 +38,7 @@
               "description": "Original tenure in years, e.g. 20"
             },
             "startDate": {
-              "default": "2026-07-25",
+              "default": "2026-07-27",
               "type": "string",
               "description": "Loan start date in YYYY-MM-DD, e.g. 2025-01-01"
             },
