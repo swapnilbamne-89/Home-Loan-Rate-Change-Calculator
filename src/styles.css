@@ -36,6 +36,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-gold: var(--gold);
+  --color-gold-ink: var(--gold-ink);
   --color-gold-soft: var(--gold-soft);
   --color-emerald-deep: var(--emerald-deep);
   --color-emerald-mid: var(--emerald-mid);
@@ -54,6 +55,7 @@
   --emerald-mid: oklch(0.46 0.09 162);       /* #0d7a5f */
   --gold: oklch(0.74 0.12 85);               /* #c9a84c */
   --gold-soft: oklch(0.88 0.07 88);
+  --gold-ink: oklch(0.52 0.11 78);           /* accessible gold for text on light bg */
 
   --background: oklch(0.985 0.012 90);
   --foreground: var(--emerald-deep);
@@ -70,7 +72,7 @@
   --secondary-foreground: var(--emerald-deep);
 
   --muted: oklch(0.95 0.018 100);
-  --muted-foreground: oklch(0.5 0.03 160);
+  --muted-foreground: oklch(0.44 0.03 160);
 
   --accent: var(--gold);
   --accent-foreground: var(--emerald-deep);

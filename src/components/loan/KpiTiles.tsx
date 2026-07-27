@@ -2,7 +2,7 @@ import { useLoan } from "@/lib/loan/store";
 import { formatINR, formatMonths } from "@/lib/loan/format";
 
 function Tile({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: "gold" | "success" }) {
-  const color = accent === "gold" ? "text-accent" : accent === "success" ? "text-[color:var(--success)]" : "text-foreground";
+  const color = accent === "gold" ? "text-gold-ink" : accent === "success" ? "text-[color:var(--success)]" : "text-foreground";
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm">
       <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
