@@ -88,6 +88,7 @@
 }
 
 .dark {
+  --gold-ink: var(--gold-soft);
   --background: var(--emerald-deep);
   --foreground: oklch(0.96 0.02 90);
   --card: oklch(0.28 0.05 162);
