@@ -77,6 +77,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "kPqdkymdBbquyxl0zI32Qb60vEBH4Y13vVssX37J9GE" },
       { title: "Home loan EMI planner" },
       { name: "description", content: "Loan Planner Pro calculates home loan repayments with flexible interest rate and EMI adjustments." },
       { name: "author", content: "Lovable" },
