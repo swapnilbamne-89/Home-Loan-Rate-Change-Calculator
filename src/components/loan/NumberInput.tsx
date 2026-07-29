@@ -50,10 +50,16 @@ export function NumberInput({ value, onChange, decimal, min, className, placehol
       }}
       onBlur={() => {
         const n = Number(text);
-        if (!isFinite(n) || text === "") {
-          setText(String(value ?? 0));
+        if (text === "" || text === "-" || text === "." || text === "-." || !isFinite(n)) {
+          // Empty/partial input on blur commits the floor value (usually 0) so
+          // clearing a field actually removes that contribution.
+          const fallback = min ?? 0;
+          setText(String(fallback));
+          if (fallback !== value) onChange(fallback);
         } else {
-          setText(String(n));
+          const clamped = min !== undefined && n < min ? min : n;
+          setText(String(clamped));
+          if (clamped !== value) onChange(clamped);
         }
       }}
     />
